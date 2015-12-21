@@ -173,7 +173,18 @@ class FormType extends AbstractType
             'mapped' => false
         ));
 
-        $builder->add('buttons', 'form_buttons');
+        if (!empty($options['update_select']))
+        {
+            $builder->add('buttons', 'form_buttons', array('apply_text' => false));
+            $builder->add('updateSelect',
+                        'hidden',
+                        array(
+                            'data'   => 'btnSearchForm',
+                            'mapped' => false)
+                        );
+        } else {
+            $builder->add('buttons', 'form_buttons');
+        }
         $builder->add('formType', 'hidden');
 
         if (!empty($options["action"])) {
@@ -193,6 +204,8 @@ class FormType extends AbstractType
                 'determineValidationGroups',
             )
         ));
+        
+        $resolver->setOptional(array('update_select'));
     }
 
     /**

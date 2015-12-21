@@ -1,5 +1,13 @@
 //FormBundle
-Mautic.formOnLoad = function (container) {
+Mautic.formOnLoad = function (container, response) {
+    if (response && response.updateSelect) {
+        if(opener) {
+            var el = '#' + response.updateSelect; 
+            opener.mQuery(el).trigger("click");
+        } 
+        window.close();
+    }
+
     if (mQuery(container + ' #list-search').length) {
         Mautic.activateSearchAutocomplete('list-search', 'form.form');
     }

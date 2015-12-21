@@ -61,6 +61,7 @@ class FormModel extends CommonFormModel
             throw new MethodNotAllowedHttpException(array('Form'));
         }
         $params = (!empty($action)) ? array('action' => $action) : array();
+        $params = array_merge($params, $options);
         return $formFactory->create('mauticform', $entity, $params);
     }
 

@@ -272,7 +272,20 @@ class FormController extends CommonFormController
         $deletedActions = $session->get('mautic.form.'.$sessionId.'.actions.deleted', array());
 
         $action = $this->generateUrl('mautic_form_action', array('objectAction' => 'new'));
-        $form   = $model->createForm($entity, $this->get('form.factory'), $action);
+        
+        $updateSelect = ($method == 'POST')
+            ? $this->request->request->get('mauticform[updateSelect]', false, true)
+            : $this->request->get(
+                'updateSelect',
+                false
+            );
+        
+        if ($updateSelect) {
+            // Force type to template
+            $entity->setFormType('campaign');
+        }
+        
+        $form   = $model->createForm($entity, $this->get('form.factory'), $action, array('update_select' => $updateSelect));
 
         ///Check for a submitted form and process it
         if ($this->request->getMethod() == 'POST') {
@@ -336,6 +349,21 @@ class FormController extends CommonFormController
                 $template  = 'MauticFormBundle:Form:index';
             }
 
+            $passthrough = array(
+                'activeLink'    => '#mautic_form_index',
+                'mauticContent' => 'form'
+            );
+            
+            // Check to see if this is a popup
+            if (isset($form['updateSelect'])) {
+                $passthrough = array_merge(
+                    $passthrough,
+                    array(
+                        'updateSelect' => $form['updateSelect']->getData()
+                    )
+                );
+            }
+
             if ($cancelled || ($valid && $form->get('buttons')->get('save')->isClicked())) {
                 //clear temporary fields
                 $this->clearSessionComponents($sessionId);
@@ -344,11 +372,8 @@ class FormController extends CommonFormController
                     'returnUrl'       => $returnUrl,
                     'viewParameters'  => $viewParameters,
                     'contentTemplate' => $template,
-                    'passthroughVars' => array(
-                        'activeLink'    => '#mautic_form_index',
-                        'mauticContent' => 'form'
-                    )
-                ));
+                    'passthroughVars' => $passthrough)
+                );
             }
         } else {
             //clear out existing fields in case the form was refreshed, browser closed, etc

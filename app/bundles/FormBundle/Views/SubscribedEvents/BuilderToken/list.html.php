@@ -39,4 +39,12 @@ if ($tmpl == 'index') {
         'target'            => '#formEmailTokens'
     )); ?>
     <?php endif; ?>
+    <br/>
+    <div class="text-center">
+	    <button type="button" id="newFormButton" class="btn btn-primary" onclick="Mautic.loadNewEmailWindow({
+	                        &quot;windowUrl&quot;: &quot;/mautic/s/forms/new?contentOnly=1&amp;updateSelect=btnSearchForm&quot;
+	                    })">
+	        <i class="fa fa-plus "></i>
+	        <?php echo $view['translator']->trans('mautic.form.form.header.new'); ?></button>
+	</div>
 </div>
