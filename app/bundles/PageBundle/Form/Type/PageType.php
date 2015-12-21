@@ -290,7 +290,32 @@ class PageType extends AbstractType
             );
         }
 
-        $builder->add('buttons', 'form_buttons', array(
+        if (!empty($options['update_select'])) {
+            $builder->add('buttons', 'form_buttons', array(
+                'apply_text'        => false,
+                'pre_extra_buttons' => array(
+                    array(
+                        'name'  => 'builder',
+                        'label' => 'mautic.core.builder',
+                        'attr'  => array(
+                            'class'   => 'btn btn-default btn-dnd btn-nospin btn-builder text-primary',
+                            'icon'    => 'fa fa-cube',
+                            'onclick' => "Mautic.launchBuilder('page');"
+                        )
+                    )
+                )
+            ));
+
+            $builder->add(
+                    'updateSelect',
+                    'hidden',
+                    array(
+                        'data'   => 'btnSearchLandingPage',
+                        'mapped' => false
+	                )
+	            );
+	    } else {
+	    	$builder->add('buttons', 'form_buttons', array(
             'pre_extra_buttons' => array(
                 array(
                     'name'  => 'builder',
@@ -299,10 +324,11 @@ class PageType extends AbstractType
                         'class'   => 'btn btn-default btn-dnd btn-nospin btn-builder text-primary',
                         'icon'    => 'fa fa-cube',
                         'onclick' => "Mautic.launchBuilder('page');"
-                    )
-                )
-            )
-        ));
+	                    )
+	                )
+	            )
+	        ));	
+	    }
 
         if (!empty($options['action'])) {
             $builder->setAction($options['action']);
@@ -314,9 +340,13 @@ class PageType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'Mautic\PageBundle\Entity\Page'
-        ));
+        $resolver->setDefaults(
+        	array(
+            	'data_class' => 'Mautic\PageBundle\Entity\Page'
+        	)
+        );
+        
+        $resolver->setOptional(array('update_select'));
     }
 
     /**

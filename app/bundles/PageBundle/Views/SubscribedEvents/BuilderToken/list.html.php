@@ -35,4 +35,12 @@ if ($tmpl == 'index') {
         'target'            => '#pageBuilderTokens'
     )); ?>
     <?php endif; ?>
+    <br/>
+    <div class="text-center">
+	    <button type="button" id="newLandingPageButton" class="btn btn-primary" onclick="Mautic.loadNewEmailWindow({
+	                        &quot;windowUrl&quot;: &quot;/mautic/s/pages/new?contentOnly=1&amp;updateSelect=btnSearchLandingPage&quot;
+	                    })">
+	        <i class="fa fa-plus "></i>
+	        <?php echo $view['translator']->trans('mautic.page.header.new'); ?></button>
+	</div>
 </div>

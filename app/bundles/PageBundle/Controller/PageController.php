@@ -338,9 +338,16 @@ class PageController extends FormController
         //set the page we came from
         $page   = $session->get('mautic.page.page', 1);
         $action = $this->generateUrl('mautic_page_action', array('objectAction' => 'new'));
+        
+        $updateSelect = ($method == 'POST')
+            ? $this->request->request->get('page[updateSelect]', false, true)
+            : $this->request->get(
+                'updateSelect',
+                false
+            );
 
         //create the form
-        $form = $model->createForm($entity, $this->get('form.factory'), $action);
+        $form = $model->createForm($entity, $this->get('form.factory'), $action, array('update_select' => $updateSelect));
 
         ///Check for a submitted form and process it
         if ($method == 'POST') {
@@ -402,16 +409,28 @@ class PageController extends FormController
                 //clear any modified content
                 $session->remove('mautic.pagebuilder.'.$entity->getSessionId().'.content');
             }
+            
+            $passthrough = array(
+                        'activeLink'    => 'mautic_page_index',
+                        'mauticContent' => 'page'
+            );
+            
+            // Check to see if this is a popup
+            if (isset($form['updateSelect'])) {
+                $passthrough = array_merge(
+                    $passthrough,
+                    array(
+                        'updateSelect' => $form['updateSelect']->getData()
+                    )
+                );
+            }
 
             if ($cancelled || ($valid && $form->get('buttons')->get('save')->isClicked())) {
                 return $this->postActionRedirect(array(
                     'returnUrl'       => $returnUrl,
                     'viewParameters'  => $viewParameters,
                     'contentTemplate' => $template,
-                    'passthroughVars' => array(
-                        'activeLink'    => 'mautic_page_index',
-                        'mauticContent' => 'page'
-                    )
+                    'passthroughVars' => $passthrough
                 ));
             }
         }

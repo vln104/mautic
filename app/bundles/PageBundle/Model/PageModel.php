@@ -171,13 +171,14 @@ class PageModel extends FormModel
         if (!$entity instanceof Page) {
             throw new MethodNotAllowedHttpException(array('Page'));
         }
+        
+        $params = (!empty($action)) ? array('action' => $action) : array();
+		$params = array_merge($params, $options);
 
         if (!isset($options['formName'])) {
             $options['formName'] = 'page';
         }
-
-        $params = (!empty($action)) ? array('action' => $action) : array();
-
+        
         return $formFactory->create($options['formName'], $entity, $params);
     }
 

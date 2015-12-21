@@ -1,5 +1,13 @@
 //PageBundle
-Mautic.pageOnLoad = function (container) {
+Mautic.pageOnLoad = function (container, response) {
+    if (response && response.updateSelect) {
+        if(opener) {
+            var el = '#' + response.updateSelect; 
+            opener.mQuery(el).trigger("click");
+        }
+        window.close();
+    }
+    
     if (mQuery(container + ' #list-search').length) {
         Mautic.activateSearchAutocomplete('list-search', 'page.page');
     }
