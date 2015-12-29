@@ -253,6 +253,7 @@ class FormController extends CommonFormController
         $model   = $this->factory->getModel('form');
         $entity  = $model->getEntity();
         $session = $this->factory->getSession();
+        $method  = $this->request->getMethod();
 
         if (!$this->factory->getSecurity()->isGranted('form:forms:create')) {
             return $this->accessDenied();
