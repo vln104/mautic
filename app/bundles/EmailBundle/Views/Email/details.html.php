@@ -151,6 +151,11 @@ $view['slots']->set('actions', $view->render('MauticCoreBundle:Helper:page_actio
                         <?php echo $view['translator']->trans('mautic.email.click_tracks'); ?>
                     </a>
                 </li>
+                <li>
+                    <a href="#spams-container" role="tab" data-toggle="tab">
+                        <?php echo $view['translator']->trans('mautic.email.spam_score'); ?>
+                    </a>
+                </li>
                 <?php if ($showVariants): ?>
                 <li>
                     <a href="#variants-container" role="tab" data-toggle="tab">
@@ -195,6 +200,15 @@ $view['slots']->set('actions', $view->render('MauticCoreBundle:Helper:page_actio
                     )); ?>
                     <div class="clearfix"></div>
                 <?php endif; ?>
+            </div>
+            
+            <div class="tab-pane bdr-w-0" id="spams-container">
+            	<font face="Courier">
+            	Summary score: <?php echo $summaryScore?>
+            	<br/>
+            	<br/>
+				<?php echo $spamDetail ?>
+				</font>
             </div>
 
             <?php if ($showVariants): ?>

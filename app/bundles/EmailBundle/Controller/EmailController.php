@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\EmailBundle\EmailEvents;
 use Mautic\EmailBundle\Event\EmailSendEvent;
 use Mautic\EmailBundle\Entity\Email;
+use Mautic\EmailBundle\Helper\SpamScoreHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class EmailController extends FormController
@@ -367,6 +368,15 @@ class EmailController extends FormController
         // Get click through stats
         $trackableLinks = $model->getEmailClickStats($email->getId());
 
+        // Get email content
+        $emailContent = $this->getEmailContent($objectId);
+        
+        // Calculate spam score
+        $user  = $this->factory->getUser();
+        SpamScoreHelper::calculateSpamScore($emailContent, $email, $user);
+        $spamDetail = SpamScoreHelper::getDetailInfo();
+        $summaryScore = SpamScoreHelper::getSummaryScore();
+
         return $this->delegateView(
             array(
                 'returnUrl'       => $this->generateUrl(
@@ -379,6 +389,8 @@ class EmailController extends FormController
                 'viewParameters'  => array(
                     'email'          => $email,
                     'stats'          => $stats,
+                    'spamDetail'     => $spamDetail,
+                    'summaryScore'   => $summaryScore,
                     'trackableLinks' => $trackableLinks,
                     'pending'        => $model->getPendingLeads($email, null, true),
                     'logs'           => $logs,
@@ -417,6 +429,72 @@ class EmailController extends FormController
                 )
             )
         );
+    }
+    
+    private function getEmailContent($objectId)
+    {
+    	$model  = $this->factory->getModel('email');
+        $entity = $model->getEntity($objectId);
+
+        //bogus ID
+        $idHash = 'xxxxxxxxxxxxxx';
+
+        $template = $entity->getTemplate();
+        if (!empty($template)) {
+            $slots = $this->factory->getTheme($template)->getSlots('email');
+
+            $response = $this->render(
+                'MauticEmailBundle::public.html.php',
+                array(
+                    'inBrowser' => true,
+                    'slots'     => $slots,
+                    'content'   => $entity->getContent(),
+                    'email'     => $entity,
+                    'lead'      => null,
+                    'template'  => $template
+                )
+            );
+
+            //replace tokens
+            $content = $response->getContent();
+        } else {
+            $content = $entity->getCustomHtml();
+        }
+
+        // Convert emojis
+        $content = EmojiHelper::toEmoji($content, 'short');
+
+        // Override tracking_pixel
+        $tokens = array('{tracking_pixel}' => '');
+
+        // Prepare a fake lead
+        /** @var \Mautic\LeadBundle\Model\FieldModel $fieldModel */
+        $fieldModel   = $this->factory->getModel('lead.field');
+        $fields       = $fieldModel->getFieldList(false, false);
+        array_walk($fields, function(&$field) {
+            $field = "[$field]";
+        });
+        $fields['id'] = 0;
+
+        // Generate and replace tokens
+        $event = new EmailSendEvent(
+            null,
+            array(
+                'content'      => $content,
+                'email'        => $entity,
+                'idHash'       => $idHash,
+                'tokens'       => $tokens,
+                'internalSend' => true,
+                'lead'         => $fields
+            )
+        );
+        $this->factory->getDispatcher()->dispatch(EmailEvents::EMAIL_ON_DISPLAY, $event);
+
+        $content = $event->getContent(true);
+        
+        //file_put_contents('D:\emailcontent.txt', $content, FILE_APPEND);
+        
+        return $content;
     }
 
     /**
