@@ -77,28 +77,37 @@ class SpamScoreHelper
     	// Add To
     	$fullContent = $fullContent."To: ".$user->getFirstName()." ".$user->getLastName(). "<".$user->getEmail().">\n";
     	
-    	/*
+    	
     	// Add swift header
     	$fullContent = $fullContent."MIME-Version: 1.0\n";
 		$fullContent = $fullContent."Content-Type: multipart/alternative;\n";
 		$fullContent = $fullContent." boundary=\"_=_swift_v4_1452069220_d654e903735cbc75cf6fa7cd79c43d84_=_\"\n\n";
+		
+		$fullContent = $fullContent."--_=_swift_v4_1452069220_d654e903735cbc75cf6fa7cd79c43d84_=_\n";
+		$fullContent = $fullContent."Content-Type: text/plain; charset=utf-8\n";
+		$fullContent = $fullContent."Content-Transfer-Encoding: quoted-printable\n\n";
+		
+		$fullContent = $fullContent.$email->getPlainText()."\n\n";
+		
 		$fullContent = $fullContent."--_=_swift_v4_1452069220_d654e903735cbc75cf6fa7cd79c43d84_=_\n";
 		$fullContent = $fullContent."Content-Type: text/html; charset=utf-8\n";
 		$fullContent = $fullContent."Content-Transfer-Encoding: quoted-printable\n\n";
-		*/
+
     	
     	$fullContent = $fullContent.$emailContent."\n";
     	
     	// Add swift footer
-    	//$fullContent = $fullContent."--_=_swift_v4_1452069220_d654e903735cbc75cf6fa7cd79c43d84_=_--\n";
-    	//file_put_contents('D:\emailcontent.txt', $fullContent);
+    	$fullContent = $fullContent."--_=_swift_v4_1452069220_d654e903735cbc75cf6fa7cd79c43d84_=_--\n";
     	
     	$url = 'http://spamcheck.postmarkapp.com/filter';
 		$fields = array(
 			'email' => $fullContent,
 			'options' => 'long');
+
 		$fields_string = "";
-		foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+		//foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+		foreach($fields as $key=>$value) { $fields_string .= $key.'='.urlencode($value).'&'; }
+		
 		rtrim($fields_string, '&');
 
 		$ch = curl_init();
@@ -111,11 +120,8 @@ class SpamScoreHelper
 
 		//execute post
 		$result = curl_exec($ch);
-		//file_put_contents('D:\result.txt', str_replace('\n', "\n", $result));
 		//close connection
 		curl_close($ch);
-
-		//echo $result;
 
 		$jsonObj = json_decode($result);
 		
@@ -124,7 +130,5 @@ class SpamScoreHelper
 		$detail = str_replace(" ", "&nbsp;", $detail);
 		$this->detailInfo = $detail;
 		$this->summaryScore = $jsonObj->score.'/5';
-		//$row = $pieces = explode("\n", $jsonObj->report);
-		//return $strDisplay;
     }
 }
