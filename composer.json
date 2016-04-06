@@ -62,6 +62,7 @@
         "knplabs/gaufrette": "0.2",
         "aws/aws-sdk-php": "~2.7",
         "rackspace/php-opencloud": "1.12.*",
+        "mailgun/mailgun-php": "~1.7.2",
 
         "knplabs/knp-menu": "^2.0",
         "knplabs/knp-menu-bundle":"^2.0",

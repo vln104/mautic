@@ -48,6 +48,12 @@ $template = '<div class="col-md-6">{content}</div>';
             <?php endif; ?>
 
             <div class="row">
+                <?php echo $view['form']->rowIfExists($fields, 'mailer_mailgun_api_link', $template); ?>
+                <?php echo $view['form']->rowIfExists($fields, 'mailer_mailgun_private_api_key', $template); ?>
+                <?php echo $view['form']->rowIfExists($fields, 'mailer_mailgun_public_api_key', $template); ?>
+            </div>
+
+            <div class="row">
                 <?php echo $view['form']->rowIfExists($fields, 'mailer_host', $template); ?>
                 <?php echo $view['form']->rowIfExists($fields, 'mailer_port', $template); ?>
             </div>

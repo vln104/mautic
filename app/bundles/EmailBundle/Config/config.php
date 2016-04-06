@@ -226,6 +226,15 @@ return array(
                     'setPassword' => array('%mautic.mailer_password%')
                 )
             ),
+            'mautic.transport.mailgun'          => array(
+                'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\MailgunTransport',
+                'serviceAlias' => 'swiftmailer.mailer.transport.%s',
+                'methodCalls'  => array(
+                    'setAPILink' => array('%mautic.mailer_mailgun_api_link%'),
+                    'setPrivateAPIKey' => array('%mautic.mailer_mailgun_private_api_key%'),
+                    'setPublicAPIKey' => array('%mautic.mailer_mailgun_public_api_key%')
+                )
+            ),
         )
     ),
     'parameters' => array(
@@ -251,6 +260,9 @@ return array(
         'resubscribe_message'          => null,
         'monitored_email'              => array(),
         'mailer_is_owner'              => false,
-        'default_signature_text'       => null
+        'mailer_mailgun_api_link'        => '',
+        'mailer_mailgun_private_api_key' => '',
+        'mailer_mailgun_public_api_key'  => '',
+        'default_signature_text'         => null
     )
 );

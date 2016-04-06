@@ -214,6 +214,7 @@ class ConfigType extends AbstractType
                     'mautic.transport.sendgrid' => 'mautic.email.config.mailer_transport.sendgrid',
                     'mautic.transport.amazon'   => 'mautic.email.config.mailer_transport.amazon',
                     'mautic.transport.postmark' => 'mautic.email.config.mailer_transport.postmark',
+                    'mautic.transport.mailgun' 	=> 'mautic.email.config.mailer_transport.mailgun',
                     'gmail'                     => 'mautic.email.config.mailer_transport.gmail',
                     'sendmail'                  => 'mautic.email.config.mailer_transport.sendmail',
                     'smtp'                      => 'mautic.email.config.mailer_transport.smtp'
@@ -229,6 +230,7 @@ class ConfigType extends AbstractType
         );
 
         $smtpServiceShowConditions = '{"config_emailconfig_mailer_transport":["smtp"]}';
+        $mailgunServiceShowConditions = '{"config_emailconfig_mailer_transport":["mautic.transport.mailgun"]}';
         $builder->add(
             'mailer_host',
             'text',
@@ -239,6 +241,55 @@ class ConfigType extends AbstractType
                     'class'        => 'form-control',
                     'data-show-on' => $smtpServiceShowConditions,
                     'tooltip'      => 'mautic.email.config.mailer.host.tooltip'
+                ),
+                'required'   => false
+            )
+        );
+        
+        $builder->add(
+            'mailer_mailgun_api_link',
+            'text',
+            array(
+                'label'      => 'mautic.email.config.mailer.mailgun_api_link',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array(
+                    'class'        => 'form-control',
+                    'data-show-on' => $mailgunServiceShowConditions,
+                    'tooltip'      => 'mautic.email.config.mailer.mailgun_api_link.tooltip'
+                ),
+                'required'   => false
+            )
+        );
+        
+        $builder->add(
+            'mailer_mailgun_private_api_key',
+            'password',
+            array(
+                'label'      => 'mautic.email.config.mailer.mailgun_private_api_key',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array(
+                    'class'        => 'form-control',
+                    'placeholder'  => 'mautic.user.user.form.passwordplaceholder',
+                    'preaddon'     => 'fa fa-lock',
+                    'data-show-on' => $mailgunServiceShowConditions,
+                    'tooltip'      => 'mautic.email.config.mailer.mailgun_private_api_key.tooltip'
+                ),
+                'required'   => false
+            )
+        );
+        
+        $builder->add(
+            'mailer_mailgun_public_api_key',
+            'password',
+            array(
+                'label'      => 'mautic.email.config.mailer.mailgun_public_api_key',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array(
+                    'class'        => 'form-control',
+                    'placeholder'  => 'mautic.user.user.form.passwordplaceholder',
+                    'preaddon'     => 'fa fa-lock',
+                    'data-show-on' => $mailgunServiceShowConditions,
+                    'tooltip'      => 'mautic.email.config.mailer.mailgun_public_api_key.tooltip'
                 ),
                 'required'   => false
             )
@@ -267,6 +318,7 @@ class ConfigType extends AbstractType
             ], "config_emailconfig_mailer_transport":[
                 "mautic.transport.mandrill",
                 "mautic.transport.sendgrid",
+                "mautic.transport.mailgun",
                 "mautic.transport.amazon",
                 "mautic.transport.postmark",
                 "gmail"
@@ -276,7 +328,8 @@ class ConfigType extends AbstractType
         $mailerLoginHideConditions = '{
          "config_emailconfig_mailer_transport":[
                 "mail",
-                "sendmail"
+                "sendmail",
+                "mautic.transport.mailgun"
             ]
         }';
 

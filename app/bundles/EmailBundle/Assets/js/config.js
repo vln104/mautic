@@ -74,6 +74,9 @@ Mautic.testEmailServerConnection = function(sendEmail) {
         password:   mQuery('#config_emailconfig_mailer_password').val(),
         from_name:  mQuery('#config_emailconfig_mailer_from_name').val(),
         from_email: mQuery('#config_emailconfig_mailer_from_email').val(),
+        mailgun_api_link: mQuery('#config_emailconfig_mailer_mailgun_api_link').val(),
+        mailgun_private_api_key: mQuery('#config_emailconfig_mailer_mailgun_private_api_key').val(),
+        mailgun_public_api_key: mQuery('#config_emailconfig_mailer_mailgun_public_api_key').val(),
         send_test:  (typeof sendEmail !== 'undefined') ? sendEmail : false
     };
 
